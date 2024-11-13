@@ -1,0 +1,257 @@
+# -- This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  # -- This sets the image repository.
+  repository: "ubuntu"
+  # -- This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# -- This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# -- This is to override the chart name.
+nameOverride: ""
+# -- This is to override the chart fullname.
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# -- This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+# -- This is for setting the pod security context more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- This is for setting the container security context more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # -- This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # -- This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 80
+
+# -- This is for setting up the resources more information can be found here: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    # -- This sets the path for the liveness probe.
+    path: /
+    # -- This sets the port for the liveness probe.
+    port: http
+readinessProbe:
+  httpGet:
+    # -- This sets the path for the readiness probe.
+    path: /
+    # -- This sets the port for the readiness probe.
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  # -- This sets the autoscaling enabled.
+  enabled: false
+  # -- This sets the minimum replicas.
+  minReplicas: 1
+  # -- This sets the maximum replicas.
+  maxReplicas: 100
+  # -- This sets the target CPU utilization percentage.
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# -- Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+# -- Node Selector labels for pod assignment more information can be found here: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
+nodeSelector: {}
+
+# -- Toleration labels for pod assignment more information can be found here: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+tolerations: []
+
+# -- Affinity for pod assignment more information can be found here: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+affinity: {}
+
+# -- Additional Secret Provider for the output Deployment definition.
+secretProvider: []
+ ## - enabled: true
+ ##   name: test
+ ##   provider: aws
+ ##   region: us-east-1
+ ##   failoverRegion: us-east-2
+ ##   pathTranslation: "My/Path/Secret"
+ ##   objects:
+ ##     - name: "/owner/env/resource/name"
+ ##       type: "ssmparameter"
+ ##     - name: "MySecret"
+ ##       type: "secretsmanager"
+ ##       paths:
+ ##         - name: "username"
+ ##           alias: "MySecretUsername"
+ ##           version: latest
+ ##         - name: "password"
+ ##           alias: "MySecretPassword"
+ ##           versionLabel: ""
+ ##     - name: "arn:aws:secretsmanager:us-east-2:111122223333:secret:MySecret-a1b2c3"
+ ##       paths:
+ ##         - name: username
+ ##           alias: dbusername
+ ##         - name: password
+ ##           alias: dbpassword
+ ##     - name: "arn:aws:secretsmanager:us-east-1:111122223333:secret:MySecret-a1b2c3"
+ ##       alias: "MyMountedSecret"
+ ##       failover:
+ ##         - name: "arn:aws:secretsmanager:us-east-2:111122223333:secret:MyFailoverSecret-d4e5f6"
+ ## - enabled: true
+ ##   name: "google-account"
+ ##   provider: aws
+ ##   region: us-east-1
+ ##   objects:
+ ##     - name: "/owner/env/resource/oidc"
+ ##       type: "secretsmanager"
+ ##       secretObjects: true # Store secrets in a Kubernetes Secrets instead of adding them to a POD.
+ ##       paths:
+ ##         - name: "clientID"
+ ##           alias: "clientID"
+ ##         - name: "clientSecret"
+ ##           alias: "clientSecret"
+ ## - enabled: true
+ ##   name: "nginx-ingress-basic-auth"
+ ##   provider: aws
+ ##   region: us-east-1
+ ##   objects:
+ ##     - name: "/owner/env/resource/basic-auth"
+ ##       type: "secretsmanager"
+ ##       secretObjects: true # Store secrets in a Kubernetes Secrets instead of adding them to a POD.
+ ##       paths:
+ ##         - name: "basicAuth"
+ ##           alias: "basicAuth"
+
+ # -- This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress: []
+  ## - enabled: true
+  ##   name: nginx-ingress-basic-auth
+  ##   auth:
+  ##     type: basic
+  ##     provider: nginx
+  ##     secretName:  "nginx-ingress-basic-auth"
+  ##     realm: "My Realm"
+  ##   # ref: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/
+  ##   annotations: {}
+  ##   className: nginx-ingress
+  ##   hosts:
+  ##     - host: "{resource}.{owner}.{env}.example.com"
+  ##       paths:
+  ##         - path: /*
+  ##           pathType: ImplementationSpecific
+  ##           servicePort: 80
+  ## - enabled: true
+  ##   name: aws-alb-ingress-oidc-auth
+  ##   auth:
+  ##     type: oidc
+  ##     provider: aws
+  ##     issuer: "https://accounts.google.com"
+  ##     endpoints:
+  ##       authorization: "https://accounts.google.com/o/oauth2/v2/auth"
+  ##       token: "https://oauth2.googleapis.com/token"
+  ##       userInfo: "https://openidconnect.googleapis.com/v1/userinfo"
+  ##     secretName:  "google-account"
+  ##   # ref: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.9/guide/ingress/annotations/
+  ##   annotations:
+  ##     alb.ingress.kubernetes.io/group.name: alb-auth
+  ##     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+  ##     alb.ingress.kubernetes.io/scheme: internet-facing
+  ##     alb.ingress.kubernetes.io/tags: |-
+  ##       carlosrfjunior:product=product-name,
+  ##       carlosrfjunior:environment=environment-name,
+  ##       carlosrfjunior:owner=owner-name,
+  ##       carlosrfjunior:cost-center=cost-center,
+  ##       carlosrfjunior:resource=alb,
+  ##       carlosrfjunior:data-classification=false
+  ##     alb.ingress.kubernetes.io/target-type: ip
+  ##   className: alb
+  ##   hosts:
+  ##     - host: "{resource}.{owner}.{env}.insights.carlosrfjunior.com"
+  ##       paths:
+  ##         - path: /*
+  ##           pathType: ImplementationSpecific
+  ##           servicePort: 80
+
+# -- This block is for setting up the jobs for more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
+jobs: []
+  ## - enabled: true
+  ##   name: my-job-1
+  ##   annotations:
+  ##     argocd.argoproj.io/hook: PostSync
+  ##     argocd.argoproj.io/hook-delete-policy: HookSucceeded
+  ##   ttlSecondsAfterFinished: 100
+  ##   image:
+  ##     repository: ubuntu
+  ##     tag: 24
+  ##     pullPolicy: Always
+  ##   env:
+  ##     - name: ENV_NAME
+  ##       value: ENV_VALUE
+  ##   command: ["command", "arg1", "arg2"]
+  ##   args: ["arg3", "arg4"]
+  ##   restartPolicy: Never
+  ## - enabled: true
+  ##   generateName: my-generated-job
+  ##   ttlSecondsAfterFinished: 100
+  ##   image:
+  ##     repository: ubuntu
+  ##     tag: 24
+  ##     pullPolicy: Always
+  ##   env:
+  ##     - name: ENV_NAME_1
+  ##       value: ENV_VALUE_1
+  ##     - name: ENV_NAME_2
+  ##       value: ENV_VALUE_2
+  ##   command: ["command", "arg1", "arg2"]
+  ##   args: ["arg3", "arg4"]
+  ##   restartPolicy: Never
