@@ -6,13 +6,18 @@
 
 # Helm Charts Repository
 
-Private Helm Charts Repository for exclusive internal use by carlosrfjunior, its use by third parties is prohibited.
-
 ## Requeriments
 
 - [Helm v3](https://helm.sh)
 - [Helm S3 Plugin](https://helm-s3.hypnoglow.io/)
 - [Pre-commit](https://pre-commit.com/)
+
+## How to use
+
+```console
+helm repo add carlosrfjunior https://carlosrfjunior.github.io/helm-charts/
+helm install microservice carlosrfjunior/microservice -f values.yaml
+```
 
 ## Docs
 
