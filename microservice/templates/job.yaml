@@ -1,0 +1,42 @@
+{{ range .Values.jobs }}
+{{ if .enabled }}
+{{- $jobName := ( printf "%s-%s" ( trimSuffix "-" ( .name | default "job-deploy" | trunc 53 )) ( now | date "2024-01-01T12:10:05" | sha256sum )) | trunc 63 }}
+{{- if .generateName }}
+{{ include "common.job" ( dict "job" . "context" $ )  }}
+{{- else }}
+{{ include "common.job" ( dict "job" . "jobName" $jobName "context" $ )  }}
+{{- end }}
+spec:
+  {{- if .ttlSecondsAfterFinished }}
+  ttlSecondsAfterFinished: {{ .ttlSecondsAfterFinished }}
+  {{- end }}
+  {{- if .backoffLimit }}
+  backoffLimit: {{ .backoffLimit }}
+  {{- end }}
+  failedJobsHistoryLimit: {{ .failedJobsHistoryLimit | default 1 }}
+  successfulJobsHistoryLimit: {{ .successfulJobsHistoryLimit | default 3 }}
+  template:
+    spec:
+      containers:
+      {{- if .generateName }}
+      - name: {{ trimSuffix "-" .generateName }}
+      {{- else }}
+      - name: {{ .name }}
+      {{- end }}
+        image: "{{ .image.repository }}:{{ .image.tag | default $.Chart.AppVersion }}"
+        imagePullPolicy: {{ .image.pullPolicy }}
+        {{- with .env }}
+        env:
+        {{- toYaml . | nindent 9 }}
+        {{- end }}
+      {{- with .command }}
+        command:
+        {{- toYaml . | nindent 9 }}
+      {{- end }}
+      {{- with .args }}
+        args:
+        {{- toYaml . | nindent 9 }}
+      {{- end }}
+      restartPolicy: {{ .restartPolicy | default "Never" }}
+{{- end }}
+{{- end }}

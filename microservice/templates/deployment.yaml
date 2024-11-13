@@ -1,0 +1,1 @@
+{{- include "common.deploy" ( dict "deploy" .Values "context" $ )  }}

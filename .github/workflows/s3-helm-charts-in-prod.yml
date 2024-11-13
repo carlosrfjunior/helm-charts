@@ -1,0 +1,62 @@
+name: InProd
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "s3"
+
+env:
+  AWS_REGION: "us-east-1"
+  AWS_ACCOUNT_ID: "xxxxxx"
+  AWS_ASSUME_ROLE: "GHA-AssumeRole-SreProductionHelm-Charts"
+  AWS_S3_BUCKET_NAME: "carlosrfjunior-helm-charts"
+  AWS_S3_BUCKET_PREFIX: "prod"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  # JOB:
+  publish:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installing Helm
+        uses: azure/setup-helm@v4
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ASSUME_ROLE }}
+          role-session-name: GitHub_to_AWS_via_OIDC_HelmCharts_Dev
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Helm - Installing the S3 Plugin
+        run: helm plugin install https://github.com/hypnoglow/helm-s3.git
+
+      - name: Helm Adding Repository
+        env:
+          BUCKET_NAME: ${{ env.AWS_S3_BUCKET_NAME }}/${{ env.AWS_S3_BUCKET_PREFIX }}
+          BUCKET_PREFIX: ${{ env.AWS_S3_BUCKET_NAME }}-${{ env.AWS_S3_BUCKET_PREFIX }}
+        run: helm repo add ${{ env.BUCKET_PREFIX }} s3://${{ env.BUCKET_NAME }}
+
+      - name: Helm Package
+        uses: toolsascode/helm-s3-publisher-action@v1
+        with:
+          setup-helm: true
+          setup-helm-s3-plugin: true
+          repo-name: '${{ env.AWS_S3_BUCKET_NAME }}-${{ env.AWS_S3_BUCKET_PREFIX }}'
+          paths: .
+          git-ls-tree: true
+          exclude-paths: '.git, .github'
+          log-level: debug
+          report-type: 'json'
+          report-name: 'helm-s3-publisher'
+          report-path: .

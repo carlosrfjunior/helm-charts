@@ -1,0 +1,34 @@
+{{ template "extra.carlosrfjunior" . }}
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+> [!WARNING]
+> All examples should be developed in the Generic project for future reference.
+
+
+## Documentation
+
+- [Common Components](./docs/README.md)
+
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+## References
+
+* https://github.com/helm/charts/blob/master/incubator/common
+* https://github.com/bitnami/charts/blob/common
+
+{{- template "chart.requirementsSection" . }}
+
+{{- template "chart.kubeVersion" . }}
+
+{{- template "chart.valuesSection" . }}
