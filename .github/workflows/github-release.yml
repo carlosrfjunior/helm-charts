@@ -2,8 +2,8 @@ name: Release Charts in GitHub
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
 
 jobs:
   release:
