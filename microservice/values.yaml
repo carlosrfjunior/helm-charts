@@ -216,7 +216,7 @@ ingress: []
   ##     alb.ingress.kubernetes.io/target-type: ip
   ##   className: alb
   ##   hosts:
-  ##     - host: "{resource}.{owner}.{env}.insights.carlosrfjunior.com"
+  ##     - host: "{resource}.{owner}.{env}.carlosrfjunior.com"
   ##       paths:
   ##         - path: /*
   ##           pathType: ImplementationSpecific
