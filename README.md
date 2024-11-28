@@ -27,24 +27,6 @@ helm install microservice carlosrfjunior/microservice -f values.yaml
 
 - The [common](./common/README.md) project aims to make pre-developed components available to be shared between charts using code reuse, avoiding duplicate code and ensuring global standardization of the use of internal components.
 
-### Diagrams
-
-### High Level Architecture
-
-To provide helm charts via private URL, we adopted the following solutions:
-
-- GitHub for source code management;
-- GitHub Actions for building and deploying new compiled versions;
-- AWS S3 Bucket for storing the versions;
-- The bucket was divided by prefixes referencing their respective environments. Examples: prod and dev
-- In the production EKS/Kubernetes cluster, Chartmuseum was installed and configured to make the versions of the helm charts compiled in the company's private environment available;
-- Chartmuseum has two ways of accessing it via Kubernetes' internal DNS `http://chartmuseum.chartmuseum.svc.cluster.local:8080/{env}` or via **ALB Ingress with AWS Route 53** and address `https://helm-charts.company.com`;
-- Finally, today we only use Kubernetes' internal DNS because ArgoCD is already in the same cluster as Chartmuseum, so it is not necessary to use DNS via AWS Route53.
-
-<p>
-<img src="./docs/diagrams/Helm Chart Repository.jpg" height="600" alt="Helm Chart Repository"/>
-</p>
-
 ### Usage example
 
 **Other examples in [microservice](./microservice/values.yaml)**
